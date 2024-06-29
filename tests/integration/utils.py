@@ -40,6 +40,7 @@ def create_product_body(request_type: str, stack_id: str, resource_properties: d
         'ResponseURL': 'https://cloudformation-custom-resource-response-useast1.s3.amazonaws.com/arn%3Aaws%3Acloudformation%3Aus-east-1%3A123456789012%3Astack/SC-123456789012-pp-yuqxzldfdagkq/1dbb0a20-14e8-11ef-a95c-0eaa9ec0a8b1%7CPlatformGovernanceCustomResource%7Ccc5ad960-e179-4f71-8fdc-3513cdc604a8?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20240518T072804Z&X-Amz-SignedHeaders=host&X-Amz-Expires=7200&X-Amz-Credential=Afdsfdsfs0518%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=3f4fgdgdfgfdg',
         'StackId': stack_id,
         'RequestId': 'cc5ad960-e179-4f71-8fdc-3513cdc604a8',
+        'PhysicalResourceId': 'unique-physical-resource-id',
         'LogicalResourceId': 'PlatformGovernanceCustomResource',
         'ResourceType': 'Custom::PlatformEngGovernanceEnabler',
         'ResourceProperties': resource_properties,
