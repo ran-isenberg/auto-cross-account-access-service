@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "aws_lambda_handler_cookbook"
-version = "3.0.0"
+name = "auto_cross_account_access_service"
+version = "1.0.0"
 description = "This repository provides a working, deployable, open source based, AWS Lambda handler and CDK Python code. This handler embodies Serverless best practices and has all the bells and whistles for a proper production ready handler"
 authors = ["Ran Isenberg"]
 classifiers=[
@@ -10,7 +10,7 @@ classifiers=[
     "Natural Language :: English",
     "Programming Language :: Python :: 3.11",
 ]
-repository="https://github.com/ran-isenberg/aws-lambda-handler-cookbook"
+repository="https://github.com/ran-isenberg/auto-cross-account-access-service"
 readme = "README.md"
 keywords = ["aws lambda cookbook", "guide to aws lambda", "cdk template", "best practices", "serverless service template"]
 license = "MIT-0"

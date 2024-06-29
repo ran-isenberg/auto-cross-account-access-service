@@ -144,6 +144,7 @@ def test_product_delete_event_model_valid():
         'RequestId': 'unique-request-id',
         'LogicalResourceId': 'PlatformGovernanceCustomResource',
         'ResourceType': 'Custom::PlatformEngGovernanceEnabler',
+        'PhysicalResourceId': 'unique-physical-resource-id',
         'ResourceProperties': {
             'product_name': 'TestProduct',
             'product_version': '1.0',
@@ -171,6 +172,7 @@ def test_product_update_event_model_valid():
         'RequestId': 'unique-request-id',
         'LogicalResourceId': 'PlatformGovernanceCustomResource',
         'ResourceType': 'Custom::PlatformEngGovernanceEnabler',
+        'PhysicalResourceId': 'unique-physical-resource-id',
         'ResourceProperties': {
             'product_name': 'TestProduct',
             'product_version': '1.0',
