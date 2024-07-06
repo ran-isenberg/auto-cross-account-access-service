@@ -2,7 +2,7 @@ from aws_cdk import CfnOutput, RemovalPolicy
 from aws_cdk import aws_dynamodb as dynamodb
 from constructs import Construct
 
-import cdk.catalog.constants as constants
+import cdk.demo.constants as constants
 
 
 class VisibilityDbConstruct(Construct):

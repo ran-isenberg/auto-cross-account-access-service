@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from cdk.catalog.constants import (
+from cdk.demo.constants import (
     METRICS_DIMENSION_VALUE,
     METRICS_NAMESPACE,
     PORTFOLIO_ID_OUTPUT,

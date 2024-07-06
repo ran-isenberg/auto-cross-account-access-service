@@ -12,3 +12,4 @@ class Observability(BaseModel):
 class VisibilityEnvVars(Observability):
     TABLE_NAME: Annotated[str, Field(min_length=1)]
     PORTFOLIO_ID: Annotated[str, Field(min_length=1)]
+    TRUST_ROLE_ARN: Annotated[str, Field(min_length=1)]

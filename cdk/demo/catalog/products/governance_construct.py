@@ -1,7 +1,7 @@
 from aws_cdk import CfnParameter, CustomResource, RemovalPolicy, Stack, aws_sns
 from constructs import Construct
 
-from cdk.catalog.constants import CUSTOM_RESOURCE_TYPE
+from cdk.demo.constants import CUSTOM_RESOURCE_TYPE
 
 
 class GovernanceProductConstruct(Construct):

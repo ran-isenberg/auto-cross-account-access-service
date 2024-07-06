@@ -5,9 +5,9 @@ from aws_cdk import aws_lambda as _lambda
 from aws_cdk import aws_servicecatalog as servicecatalog
 from constructs import Construct
 
-import cdk.catalog.constants as constants
-from cdk.catalog.products.cicd_product import CiCdProduct
-from cdk.catalog.products.waf_product import WafRulesProduct
+import cdk.demo.constants as constants
+from cdk.demo.catalog.products.cicd_product import CiCdProduct
+from cdk.demo.catalog.products.waf_product import WafRulesProduct
 
 
 class PortfolioConstruct(Construct):

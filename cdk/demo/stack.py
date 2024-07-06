@@ -1,21 +1,37 @@
-from aws_cdk import Aspects, Stack, Tags
+from aws_cdk import Aspects, RemovalPolicy, Stack, Tags
+from aws_cdk import aws_lambda as _lambda
+from aws_cdk.aws_lambda_python_alpha import PythonLayerVersion
 from cdk_nag import AwsSolutionsChecks, NagSuppressions
 from constructs import Construct
 
-from cdk.catalog.constants import OWNER_TAG, SERVICE_NAME, SERVICE_NAME_TAG
-from cdk.catalog.observability_construct import ObservabilityConstruct
-from cdk.catalog.portfolio_construct import PortfolioConstruct
-from cdk.catalog.utils import get_construct_name, get_username
-from cdk.catalog.visibility_construct import VisibilityConstruct
+import cdk.demo.constants as constants
+from cdk.demo.catalog.observability_construct import ObservabilityConstruct
+from cdk.demo.catalog.portfolio_construct import PortfolioConstruct
+from cdk.demo.catalog.visibility_construct import VisibilityConstruct
+from cdk.demo.constants import OWNER_TAG, SERVICE_NAME, SERVICE_NAME_TAG
+from cdk.demo.trust_service import TrustServiceConstruct
+from cdk.demo.utils import get_construct_name, get_username
 
 
 class ServiceStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs) -> None:
         super().__init__(scope, id, **kwargs)
         self._add_stack_tags()
-        self.governance = VisibilityConstruct(self, get_construct_name(stack_prefix=id, construct_name='Governance'))
+        self.common_layer = self._build_common_layer()
+        self.trust_service = TrustServiceConstruct(
+            self, get_construct_name(stack_prefix=id, construct_name='TrustService'), common_layer=self.common_layer
+        )
+        self.governance = VisibilityConstruct(
+            self,
+            get_construct_name(stack_prefix=id, construct_name='Governance'),
+            self.common_layer,
+            self.trust_service.cross_account_access_role,
+        )
         self.portfolio = PortfolioConstruct(
-            self, get_construct_name(stack_prefix=id, construct_name='Portfolio'), self.governance.sns_topic, self.governance.governance_lambda
+            self,
+            get_construct_name(stack_prefix=id, construct_name='Portfolio'),
+            self.governance.sns_topic,
+            self.governance.governance_lambda,
         )
         self.observability = ObservabilityConstruct(
             self,
@@ -28,6 +44,15 @@ class ServiceStack(Stack):
 
         # add security check
         self._add_security_tests()
+
+    def _build_common_layer(self) -> PythonLayerVersion:
+        return PythonLayerVersion(
+            self,
+            constants.LAMBDA_LAYER_NAME,
+            entry=constants.COMMON_LAYER_BUILD_FOLDER,
+            compatible_runtimes=[_lambda.Runtime.PYTHON_3_12],
+            removal_policy=RemovalPolicy.DESTROY,
+        )
 
     def _add_stack_tags(self) -> None:
         # best practice to help identify resources in the console
