@@ -1,5 +1,6 @@
 import random
 import string
+from functools import lru_cache
 
 import boto3
 from aws_lambda_powertools.utilities.typing import LambdaContext
@@ -22,10 +23,15 @@ def generate_context() -> LambdaContext:
     return context
 
 
-def get_stack_output(output_key: str) -> str:
+@lru_cache()
+def get_stack_outputs(stack_name: str) -> dict:
     client = boto3.client('cloudformation')
-    response = client.describe_stacks(StackName=get_stack_name())
-    stack_outputs = response['Stacks'][0]['Outputs']
+    response = client.describe_stacks(StackName=stack_name)
+    return response['Stacks'][0]['Outputs']
+
+
+def get_stack_output(output_key: str) -> str:
+    stack_outputs = get_stack_outputs(get_stack_name())
     for value in stack_outputs:
         if str(value['OutputKey']) == output_key:
             return value['OutputValue']

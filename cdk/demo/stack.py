@@ -5,9 +5,9 @@ from cdk_nag import AwsSolutionsChecks, NagSuppressions
 from constructs import Construct
 
 import cdk.demo.constants as constants
+from cdk.demo.catalog.governance_construct import GovernanceConstruct
 from cdk.demo.catalog.observability_construct import ObservabilityConstruct
 from cdk.demo.catalog.portfolio_construct import PortfolioConstruct
-from cdk.demo.catalog.visibility_construct import VisibilityConstruct
 from cdk.demo.constants import OWNER_TAG, SERVICE_NAME, SERVICE_NAME_TAG
 from cdk.demo.trust_service import TrustServiceConstruct
 from cdk.demo.utils import get_construct_name, get_username
@@ -19,9 +19,11 @@ class ServiceStack(Stack):
         self._add_stack_tags()
         self.common_layer = self._build_common_layer()
         self.trust_service = TrustServiceConstruct(
-            self, get_construct_name(stack_prefix=id, construct_name='TrustService'), common_layer=self.common_layer
+            self,
+            get_construct_name(stack_prefix=id, construct_name='TrustService'),
+            common_layer=self.common_layer,
         )
-        self.governance = VisibilityConstruct(
+        self.governance = GovernanceConstruct(
             self,
             get_construct_name(stack_prefix=id, construct_name='Governance'),
             self.common_layer,

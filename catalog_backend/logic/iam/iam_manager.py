@@ -11,9 +11,9 @@ from catalog_backend.logic.iam.helpers import (
 
 # returns external id for the trust policy
 @tracer.capture_method(capture_response=False)
-def create_iam_trust(trust_role_name: str, product_role_arn: str) -> str:
+def create_iam_trust(service_role_name: str, product_role_arn: str) -> str:
     iam_client = boto3.client('iam')
-    current_policy_document = get_trust_policy(iam_client, trust_role_name)
+    current_policy_document = get_trust_policy(iam_client, service_role_name)
 
     # Check if the product_role_arn is already in the trust policy
     new_statements = []
@@ -31,15 +31,15 @@ def create_iam_trust(trust_role_name: str, product_role_arn: str) -> str:
 
     # Update the trust policy, replace statements with new_statements
     current_policy_document['Statement'] = new_statements
-    update_assume_role_policy(iam_client, trust_role_name, current_policy_document)
+    update_assume_role_policy(iam_client, service_role_name, current_policy_document)
     return external_id
 
 
 # returns external id for the trust policy, updates policy if needed
 @tracer.capture_method(capture_response=False)
-def update_iam_trust(trust_role_name: str, product_role_arn: str, old_product_role_arn: str) -> str:
+def update_iam_trust(service_role_name: str, product_role_arn: str, old_product_role_arn: str) -> str:
     iam_client = boto3.client('iam')
-    current_policy_document = get_trust_policy(iam_client, trust_role_name)
+    current_policy_document = get_trust_policy(iam_client, service_role_name)
 
     new_statements = clean_statements(current_policy_document.get('Statement', []), old_product_role_arn)
     new_statement, external_id = create_statement_and_external_id(product_role_arn)
@@ -47,17 +47,17 @@ def update_iam_trust(trust_role_name: str, product_role_arn: str, old_product_ro
 
     # replace statements with new_statements
     current_policy_document['Statement'] = new_statements
-    update_assume_role_policy(iam_client, trust_role_name, current_policy_document)
+    update_assume_role_policy(iam_client, service_role_name, current_policy_document)
     return external_id
 
 
 @tracer.capture_method(capture_response=False)
-def delete_iam_trust(trust_role_name: str, product_role_arn: str) -> None:
+def delete_iam_trust(service_role_name: str, product_role_arn: str) -> None:
     iam_client = boto3.client('iam')
-    current_policy_document = get_trust_policy(iam_client, trust_role_name)
+    current_policy_document = get_trust_policy(iam_client, service_role_name)
 
     new_statements = clean_statements(current_policy_document.get('Statement', []), product_role_arn)
 
     # replace statements with new_statements
     current_policy_document['Statement'] = new_statements
-    update_assume_role_policy(iam_client, trust_role_name, current_policy_document)
+    update_assume_role_policy(iam_client, service_role_name, current_policy_document)

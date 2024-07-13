@@ -10,21 +10,24 @@ from aws_cdk.aws_logs import RetentionDays
 from constructs import Construct
 
 import cdk.demo.constants as constants
-from cdk.demo.catalog.visibility_db_construct import VisibilityDbConstruct
+from cdk.demo.catalog.governance_db_construct import GovernanceDbConstruct
 
 
-class VisibilityConstruct(Construct):
+class GovernanceConstruct(Construct):
     def __init__(self, scope: Construct, id_: str, common_layer: PythonLayerVersion, service_trust_role: iam.Role) -> None:
         super().__init__(scope, id_)
         self.id_ = id_
-        self.api_db = VisibilityDbConstruct(self, f'{id_}db')
+        self.api_db = GovernanceDbConstruct(self, f'{id_}db')
         self.lambda_role = self._build_lambda_role(self.api_db.db, service_trust_role)
         self.common_layer = common_layer
-        self.governance_lambda = self._add_visibility_lambda(self.lambda_role, self.api_db.db, self.common_layer, service_trust_role)
+        self.governance_lambda = self._build_governance_lambda(self.lambda_role, self.api_db.db, self.common_layer, service_trust_role)
         self.sns_topic = self._build_sns()
         self.queue = self._build_sns_sqs_lambda_pattern(self.sns_topic, self.governance_lambda)
-        CfnOutput(self, 'ServiceTrustRoleArn', value=self.lambda_role.role_arn).override_logical_id('ServiceTrustRoleArn')
-        CfnOutput(self, 'ServiceTrustRoleName', value=self.lambda_role.role_arn).override_logical_id('ServiceTrustRoleName')
+        self._set_outputs()
+
+    def _set_outputs(self) -> None:
+        CfnOutput(self, 'ServiceRoleArn', value=self.lambda_role.role_arn).override_logical_id('ServiceRoleArn')
+        CfnOutput(self, 'ServiceRoleName', value=self.lambda_role.role_name).override_logical_id('ServiceRoleName')
 
     def _build_sns(self) -> aws_sns.Topic:
         topic = aws_sns.Topic(
@@ -64,12 +67,13 @@ class VisibilityConstruct(Construct):
         )
         topic.add_subscription(topic_subscription=subscriptions.SqsSubscription(queue, raw_message_delivery=True))
         function.add_event_source(eventsources.SqsEventSource(queue=queue, batch_size=1, enabled=True))
+        # todo add DLQ redrive pattern
         return queue
 
     def _build_lambda_role(self, db: dynamodb.TableV2, service_trust_role: iam.Role) -> iam.Role:
         return iam.Role(
             self,
-            constants.SERVICE_ROLE_ARN,
+            'governRole',
             assumed_by=iam.ServicePrincipal('lambda.amazonaws.com'),
             inline_policies={
                 'dynamodb_db': iam.PolicyDocument(
@@ -84,7 +88,7 @@ class VisibilityConstruct(Construct):
                 'trust_relationship': iam.PolicyDocument(
                     statements=[
                         iam.PolicyStatement(
-                            actions=['iam:UpdateAssumeRolePolicy'],
+                            actions=['iam:UpdateAssumeRolePolicy', 'iam:GetRole'],
                             resources=[service_trust_role.role_arn],
                             effect=iam.Effect.ALLOW,
                         )
@@ -96,7 +100,7 @@ class VisibilityConstruct(Construct):
             ],
         )
 
-    def _add_visibility_lambda(
+    def _build_governance_lambda(
         self,
         role: iam.Role,
         db: dynamodb.TableV2,

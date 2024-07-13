@@ -21,6 +21,7 @@ class TrustServiceConstruct(Construct):
         orders_resource = api_resource.add_resource('order')
         self.create_order_func = self._add_post_lambda_integration(orders_resource, self.lambda_role)
         self.cross_account_access_role = self._build_cross_account_role()
+        self.tests_role = self._build_tests_role()  # this is for the tests, in proper service, create it only in non prod environments
 
     def _build_cross_account_role(self) -> iam.Role:
         role = iam.Role(
@@ -41,8 +42,19 @@ class TrustServiceConstruct(Construct):
                 )
             },
         )
-        CfnOutput(self, id='TrustRoleArn', value=role.role_arn).override_logical_id('TrustRoleArn')
-        CfnOutput(self, id='TrustRoleName', value=role.role_name).override_logical_id('TrustRoleName')
+        return role
+
+    def _build_tests_role(self) -> iam.Role:
+        role = iam.Role(
+            self,
+            'TestsRole',
+            assumed_by=iam.ServicePrincipal('lambda.amazonaws.com'),
+            managed_policies=[
+                iam.ManagedPolicy.from_aws_managed_policy_name(managed_policy_name=(f'service-role/{constants.LAMBDA_BASIC_EXECUTION_ROLE}'))
+            ],
+        )
+        CfnOutput(self, id='TestRoleArn', value=role.role_arn).override_logical_id('TestRoleArn')
+        CfnOutput(self, id='TestRoleName', value=role.role_name).override_logical_id('TestRoleName')
         return role
 
     def _build_api_gw(self) -> aws_apigateway.RestApi:
@@ -55,7 +67,7 @@ class TrustServiceConstruct(Construct):
             cloud_watch_role=False,
         )
 
-        CfnOutput(self, id='TrustApi', value=rest_api.url).override_logical_id('TrustApi')
+        CfnOutput(self, id='TrustApiUrl', value=rest_api.url).override_logical_id('TrustApiUrl')
         return rest_api
 
     def _build_lambda_role(self) -> iam.Role:

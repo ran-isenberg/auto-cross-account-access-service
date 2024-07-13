@@ -14,7 +14,7 @@ class ProductModel(BaseModel):
     account_id: str = Field(..., min_length=1, max_length=40, alias='account_id')
     consumer_name: str = Field(..., min_length=1, max_length=40, alias='consumer_name')
     region: str = Field(..., min_length=1, max_length=20, alias='region')
-    trust_role_arn: Optional[str] = Field(None, min_length=1, max_length=40, alias='trust_role_arn')
+    trust_role_arn: Optional[str] = Field(None, min_length=1, alias='trust_role_arn')
 
 
 class ProductCreateEventModel(CloudFormationCustomResourceCreateModel):

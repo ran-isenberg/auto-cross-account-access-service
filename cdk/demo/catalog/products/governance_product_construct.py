@@ -67,8 +67,12 @@ class GovernanceProductConstruct(Construct):
         trust_role_arn: str,
     ) -> None:
         assume_role_arn = Token.as_string(custom_resource.get_att_string('assume_role_arn'))
+        external_id = Token.as_string(custom_resource.get_att_string('external_id'))
         CfnOutput(self, id='AssumeRoleArn', value=assume_role_arn, description='The role you need to assume').override_logical_id('AssumeRoleArn')
         CfnOutput(self, id='LambdaRoleArn', value=trust_role_arn, description='The Lambda role to use').override_logical_id('LambdaRoleArn')
+        CfnOutput(self, id='ExternalId', value=external_id, description='The external Id you use when you assume the role').override_logical_id(
+            'ExternalId'
+        )
         """ computed_name = PARAMETER_NAME_TEMPLATE.format(
             consumer_name=self._consumer_name,
             env_name=self._deploy_env_name,

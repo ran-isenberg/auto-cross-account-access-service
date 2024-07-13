@@ -3,7 +3,7 @@ from aws_cdk import aws_servicecatalog as servicecatalog
 from aws_cdk import aws_sns
 from constructs import Construct
 
-from cdk.demo.catalog.products.governance_construct import GovernanceProductConstruct
+from cdk.demo.catalog.products.governance_product_construct import GovernanceProductConstruct
 
 
 class CiCdProduct(servicecatalog.ProductStack):
