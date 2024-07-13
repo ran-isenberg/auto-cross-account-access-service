@@ -1,6 +1,6 @@
 from catalog_backend.dal import get_dal_handler
 from catalog_backend.dal.db_handler import DalHandler
-from catalog_backend.handlers.utils.observability import tracer
+from catalog_backend.handlers.utils.observability import logger, tracer
 from catalog_backend.models.input import ProductCreateEventModel, ProductDeleteEventModel, ProductUpdateEventModel
 
 
@@ -21,6 +21,9 @@ def provision_product(
         consumer_name=product_details.resource_properties.consumer_name,
         region=product_details.resource_properties.region,
     )
+
+    if product_details.resource_properties.trust_role_arn:
+        logger.info('trust role arn is provided, updating trust policy')
     return product_details.request_id
 
 
@@ -42,3 +45,6 @@ def update_product(table_name: str, portfolio_id: str, product_details: ProductU
         consumer_name=product_details.resource_properties.consumer_name,
         region=product_details.resource_properties.region,
     )
+
+    if product_details.resource_properties.trust_role_arn:
+        logger.info('trust role arn is provided, updating trust policy')

@@ -1,6 +1,6 @@
 import aws_cdk.aws_lambda_event_sources as eventsources
 import boto3
-from aws_cdk import Duration, RemovalPolicy, aws_sns, aws_sqs
+from aws_cdk import CfnOutput, Duration, RemovalPolicy, aws_sns, aws_sqs
 from aws_cdk import aws_dynamodb as dynamodb
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda as _lambda
@@ -8,21 +8,23 @@ from aws_cdk import aws_sns_subscriptions as subscriptions
 from aws_cdk.aws_lambda_python_alpha import PythonLayerVersion
 from aws_cdk.aws_logs import RetentionDays
 from constructs import Construct
-from aws_cdk import aws_iam as iam
+
 import cdk.demo.constants as constants
 from cdk.demo.catalog.visibility_db_construct import VisibilityDbConstruct
 
 
 class VisibilityConstruct(Construct):
-    def __init__(self, scope: Construct, id_: str, common_layer: PythonLayerVersion, trust_role: iam.Role) -> None:
+    def __init__(self, scope: Construct, id_: str, common_layer: PythonLayerVersion, service_trust_role: iam.Role) -> None:
         super().__init__(scope, id_)
         self.id_ = id_
         self.api_db = VisibilityDbConstruct(self, f'{id_}db')
-        self.lambda_role = self._build_lambda_role(self.api_db.db, trust_role)
+        self.lambda_role = self._build_lambda_role(self.api_db.db, service_trust_role)
         self.common_layer = common_layer
-        self.governance_lambda = self._add_visibility_lambda(self.lambda_role, self.api_db.db, self.common_layer, trust_role)
+        self.governance_lambda = self._add_visibility_lambda(self.lambda_role, self.api_db.db, self.common_layer, service_trust_role)
         self.sns_topic = self._build_sns()
         self.queue = self._build_sns_sqs_lambda_pattern(self.sns_topic, self.governance_lambda)
+        CfnOutput(self, 'ServiceTrustRoleArn', value=self.lambda_role.role_arn).override_logical_id('ServiceTrustRoleArn')
+        CfnOutput(self, 'ServiceTrustRoleName', value=self.lambda_role.role_arn).override_logical_id('ServiceTrustRoleName')
 
     def _build_sns(self) -> aws_sns.Topic:
         topic = aws_sns.Topic(
@@ -64,7 +66,7 @@ class VisibilityConstruct(Construct):
         function.add_event_source(eventsources.SqsEventSource(queue=queue, batch_size=1, enabled=True))
         return queue
 
-    def _build_lambda_role(self, db: dynamodb.TableV2, trust_role: iam.Role) -> iam.Role:
+    def _build_lambda_role(self, db: dynamodb.TableV2, service_trust_role: iam.Role) -> iam.Role:
         return iam.Role(
             self,
             constants.SERVICE_ROLE_ARN,
@@ -83,7 +85,7 @@ class VisibilityConstruct(Construct):
                     statements=[
                         iam.PolicyStatement(
                             actions=['iam:UpdateAssumeRolePolicy'],
-                            resources=[trust_role.role_arn],
+                            resources=[service_trust_role.role_arn],
                             effect=iam.Effect.ALLOW,
                         )
                     ]
@@ -99,7 +101,7 @@ class VisibilityConstruct(Construct):
         role: iam.Role,
         db: dynamodb.TableV2,
         layer: PythonLayerVersion,
-        trust_role: iam.Role,
+        service_trust_role: iam.Role,
     ) -> _lambda.Function:
         lambda_function = _lambda.Function(
             self,
@@ -113,7 +115,8 @@ class VisibilityConstruct(Construct):
                 'POWERTOOLS_METRICS_NAMESPACE': constants.METRICS_NAMESPACE,  # for metrics
                 'METRICS_DIMENSION_KEY': constants.METRICS_DIMENSION_VALUE,  # for metrics
                 'TABLE_NAME': db.table_name,
-                'TRUST_ROLE_ARN': trust_role.role_arn,
+                'SERVICE_ROLE_NAME': service_trust_role.role_name,
+                'SERVICE_ROLE_ARN': service_trust_role.role_arn,
                 # 'PORTFOLIO_ID': constants.PORTFOLIO_ID, is added later after portfolio creation
             },
             tracing=_lambda.Tracing.ACTIVE,

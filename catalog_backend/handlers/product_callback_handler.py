@@ -51,6 +51,8 @@ def create_event(event: Dict[str, Any], context: LambdaContext) -> str:
         logger.info('parsed create product details')
         resource_id = provision_product(product_details=parsed_event, table_name=env_vars.TABLE_NAME, portfolio_id=env_vars.PORTFOLIO_ID)
         metrics.add_metric(name='CreatedProducts', unit=MetricUnit.Count, value=1)
+        # todo return actual params
+        CFN_RESOURCE.Data.update({'assume_role_arn': env_vars.SERVICE_ROLE_ARN})
         return resource_id
     except Exception:
         logger.exception('failed to process created product')
@@ -76,6 +78,7 @@ def update_event(event: Dict[str, Any], context: LambdaContext) -> None:
         metrics.add_metric(name='UpdatedProducts', unit=MetricUnit.Count, value=1)
         logger.info('parsed update product details')
         update_product(product_details=parsed_event, table_name=env_vars.TABLE_NAME, portfolio_id=env_vars.PORTFOLIO_ID)
+        CFN_RESOURCE.Data.update({'assume_role_arn': env_vars.SERVICE_ROLE_ARN})
     except Exception:
         logger.exception('failed to process updated product')
         metrics.add_metric(name='FailedUpdatedProducts', unit=MetricUnit.Count, value=1)

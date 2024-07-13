@@ -23,6 +23,8 @@ def init():
     os.environ['AWS_DEFAULT_REGION'] = 'us-east-1'  # used for appconfig mocked boto calls
     os.environ['TABLE_NAME'] = get_stack_output(TABLE_NAME_OUTPUT)
     os.environ['PORTFOLIO_ID'] = get_stack_output(PORTFOLIO_ID_OUTPUT)
+    os.environ['SERVICE_ROLE_ARN'] = get_stack_output('ServiceTrustRoleArn')
+    os.environ['SERVICE_ROLE_NAME'] = get_stack_output('ServiceTrustRoleName')
 
 
 @pytest.fixture(scope='module', autouse=True)

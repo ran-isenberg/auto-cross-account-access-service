@@ -7,6 +7,7 @@ from constructs import Construct
 
 import cdk.demo.constants as constants
 from cdk.demo.catalog.products.cicd_product import CiCdProduct
+from cdk.demo.catalog.products.cross_account_access_product import CrossAccountAccessProduct
 from cdk.demo.catalog.products.waf_product import WafRulesProduct
 
 
@@ -68,7 +69,26 @@ class PortfolioConstruct(Construct):
             ],
         )
 
-        return [cfn_cicd_product, cfn_waf_product]
+        cross_account_access_product = CrossAccountAccessProduct(
+            self,
+            'CrossAccountAccessProductStack',
+            governance_topic,
+        )
+        cfn_access_product = servicecatalog.CloudFormationProduct(
+            self,
+            'AccessProduct',
+            product_name=cross_account_access_product.product_name,
+            owner='Platform engineering',
+            product_versions=[
+                servicecatalog.CloudFormationProductVersion(
+                    cloud_formation_template=servicecatalog.CloudFormationTemplate.from_product_stack(cross_account_access_product),
+                    description=cross_account_access_product.product_description,
+                    product_version_name=cross_account_access_product.product_version,
+                )
+            ],
+        )
+
+        return [cfn_cicd_product, cfn_waf_product, cfn_access_product]
 
     def _share_portfolio(self) -> None:
         # share with account numbers, ideally you would share across your organization
