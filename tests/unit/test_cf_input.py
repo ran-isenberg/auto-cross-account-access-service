@@ -98,6 +98,7 @@ def test_product_create_event_model_valid():
             'account_id': '123456789012',
             'consumer_name': 'TestConsumer',
             'region': 'us-west-2',
+            'trust_role_arn': None,
         },
     }
 
@@ -125,6 +126,7 @@ def test_product_create_event_model_invalid_resource_type():
             'account_id': '123456789012',
             'consumer_name': 'TestConsumer',
             'region': 'us-west-2',
+            'trust_role_arn': None,
         },
     }
 
@@ -151,6 +153,7 @@ def test_product_delete_event_model_valid():
             'account_id': '123456789012',
             'consumer_name': 'TestConsumer',
             'region': 'us-west-2',
+            'trust_role_arn': None,
         },
     }
 
@@ -179,6 +182,7 @@ def test_product_update_event_model_valid():
             'account_id': '123456789012',
             'consumer_name': 'TestConsumer',
             'region': 'us-west-2',
+            'trust_role_arn': None,
         },
         'OldResourceProperties': {
             'product_name': 'OldTestProduct',
@@ -186,6 +190,7 @@ def test_product_update_event_model_valid():
             'account_id': '123456789012',
             'consumer_name': 'OldTestConsumer',
             'region': 'us-west-1',
+            'trust_role_arn': None,
         },
     }
 
@@ -214,6 +219,7 @@ def test_product_update_event_model_invalid_resource_type():
             'account_id': '123456789012',
             'consumer_name': 'TestConsumer',
             'region': 'us-west-2',
+            'trust_role_arn': None,
         },
         'OldResourceProperties': {
             'product_name': 'OldTestProduct',
@@ -221,6 +227,7 @@ def test_product_update_event_model_invalid_resource_type():
             'account_id': '123456789012',
             'consumer_name': 'OldTestConsumer',
             'region': 'us-west-1',
+            'trust_role_arn': None,
         },
     }
 

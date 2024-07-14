@@ -22,7 +22,6 @@ CFN_RESOURCE = CfnResource(json_logging=False, log_level='INFO', boto_level='CRI
 @tracer.capture_lambda_handler(capture_response=False)
 def handle_product_event(event: Dict[str, Any], context: LambdaContext) -> None:
     logger.info('processing product SQS event', event=event)
-
     try:
         parsed_envelope = SqsModel.model_validate(event)
         # Batch size for the SQS integration is configured to size of 1 (CDK)
@@ -42,20 +41,21 @@ def create_event(event: Dict[str, Any], context: LambdaContext) -> str:
     Return an id that will be used for the resource PhysicalResourceId
     """
     logger.info('custom resource create flow', event=event)
-    env_vars = get_environment_variables(model=VisibilityEnvVars)
-
     # parse product input as a create custom resource  request
     try:
         parsed_event = ProductCreateEventModel.model_validate(event)
         logger.append_keys(stack_id=parsed_event.stack_id, product=parsed_event.resource_properties)
         logger.info('parsed create product details')
-        resource_id = provision_product(product_details=parsed_event, table_name=env_vars.TABLE_NAME, portfolio_id=env_vars.PORTFOLIO_ID)
-        metrics.add_metric(name='CreatedProducts', unit=MetricUnit.Count, value=1)
-        return resource_id
+        resource_id, cfn_data = provision_product(product_details=parsed_event)
     except Exception:
         logger.exception('failed to process created product')
         metrics.add_metric(name='FailedCreatedProducts', unit=MetricUnit.Count, value=1)
         raise  # CFN_RESOURCE will fail the request
+
+    metrics.add_metric(name='CreatedProducts', unit=MetricUnit.Count, value=1)
+    if cfn_data:  # if trust role arn is provided, cross account access product, return the updated data
+        CFN_RESOURCE.Data.update(cfn_data)
+    return resource_id
 
 
 @CFN_RESOURCE.update
@@ -68,18 +68,20 @@ def update_event(event: Dict[str, Any], context: LambdaContext) -> None:
     """
     logger.info('custom resource update flow', event=event)
     env_vars = get_environment_variables(model=VisibilityEnvVars)
-
     try:
         # parse product input as a delete custom resource  request
         parsed_event = ProductUpdateEventModel.model_validate(event)
         logger.append_keys(stack_id=parsed_event.stack_id, product=parsed_event.resource_properties, old_product=parsed_event.old_resource_properties)
-        metrics.add_metric(name='UpdatedProducts', unit=MetricUnit.Count, value=1)
         logger.info('parsed update product details')
-        update_product(product_details=parsed_event, table_name=env_vars.TABLE_NAME, portfolio_id=env_vars.PORTFOLIO_ID)
+        cfn_data = update_product(product_details=parsed_event)
     except Exception:
         logger.exception('failed to process updated product')
         metrics.add_metric(name='FailedUpdatedProducts', unit=MetricUnit.Count, value=1)
         raise  # CFN_RESOURCE will fail the request
+
+    metrics.add_metric(name='UpdatedProducts', unit=MetricUnit.Count, value=1)
+    if cfn_data:  # if trust role arn is provided, cross account access product, return the updated data
+        CFN_RESOURCE.Data.update({'assume_role_arn': env_vars.SERVICE_ROLE_ARN, 'external_id': 'external_id'})
 
 
 @CFN_RESOURCE.delete
@@ -90,15 +92,13 @@ def delete_event(event: Dict[str, Any], context: LambdaContext) -> None:
     """
     logger.info('custom resource delete flow', event=event)
     metrics.add_metric(name='DeletedProducts', unit=MetricUnit.Count, value=1)
-    env_vars = get_environment_variables(model=VisibilityEnvVars)
-
     try:
         # parse product input as a delete custom resource  request
         parsed_event = ProductDeleteEventModel.model_validate(event)
         logger.append_keys(stack_id=parsed_event.stack_id, product=parsed_event.resource_properties)
         metrics.add_metric(name='DeleteProduct', unit=MetricUnit.Count, value=1)
         logger.info('parsed delete product details')
-        delete_product(product_details=parsed_event, table_name=env_vars.TABLE_NAME, portfolio_id=env_vars.PORTFOLIO_ID)
+        delete_product(product_details=parsed_event)
     except Exception:
         logger.exception('failed to process deleted product')
         metrics.add_metric(name='FailedDeletedProducts', unit=MetricUnit.Count, value=1)

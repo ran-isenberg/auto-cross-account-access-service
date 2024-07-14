@@ -2,6 +2,8 @@ import json
 from typing import Any, Optional
 from unittest.mock import ANY, MagicMock
 
+import boto3
+
 from tests.utils import generate_context
 
 
@@ -9,6 +11,27 @@ def call_handle_product_event(event: dict[str, Any]) -> dict[str, Any]:
     from catalog_backend.handlers.product_callback_handler import handle_product_event
 
     return handle_product_event(event, generate_context())
+
+
+def is_role_arn_in_trust_relationship(product_role_arn: str, service_role_name: str) -> bool:
+    """
+    Check if a given role ARN appears in the trust relationship document of another role.
+
+    :param role_arn: The ARN of the role to check.
+    :param trust_role_name: The name of the role whose trust relationship document will be checked.
+    :return: True if the role ARN appears in the trust relationship document, False otherwise.
+    """
+    client = boto3.client('iam')
+
+    # Get the trust relationship document of the trust_role_name
+    response = client.get_role(RoleName=service_role_name)
+    trust_relationship = response['Role']['AssumeRolePolicyDocument']
+
+    # Convert the trust relationship document to a JSON string for easier processing
+    trust_relationship_str = json.dumps(trust_relationship)
+
+    # Check if the role ARN appears in the trust relationship document
+    return product_role_arn in trust_relationship_str
 
 
 def mock_crhelper(mocker) -> MagicMock:
@@ -22,8 +45,8 @@ def mock_crhelper(mocker) -> MagicMock:
     return crhelper_send_response_mock
 
 
-def assert_crhelper_response(success: bool, crhelper_mock: MagicMock):
-    assert crhelper_mock.call_count == 2
+def assert_crhelper_response(success: bool, crhelper_mock: MagicMock, expected_service_role_arn: str = '', call_count: int = 2):
+    assert crhelper_mock.call_count == call_count
     actual_call_args = crhelper_mock.call_args[1]
     body = json.loads(actual_call_args['body'])
     if success:
@@ -31,6 +54,20 @@ def assert_crhelper_response(success: bool, crhelper_mock: MagicMock):
     else:
         assert body['Status'] == 'FAILED'
         assert body['Reason'] == ANY
+    if expected_service_role_arn:
+        assert body['Data']['assume_role_arn'] == expected_service_role_arn
+        assert body['Data']['external_id']
+
+
+def check_db_entry_exists(table_name: str, portfolio_id: str, product_stack_id: str) -> bool:
+    dynamodb_table = boto3.resource('dynamodb').Table(table_name)
+    response = dynamodb_table.get_item(
+        Key={
+            'portfolio_id': portfolio_id,
+            'product_stack_id': product_stack_id,
+        }
+    )
+    return response.get('Item', None)
 
 
 def create_product_body(request_type: str, stack_id: str, resource_properties: dict, old_resource_properties: Optional[dict] = None) -> str:

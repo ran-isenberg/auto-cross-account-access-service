@@ -36,12 +36,16 @@ def test_visibility_env_vars_valid():
         TABLE_NAME='MyTable',
         PORTFOLIO_ID='MyPortfolioId',
         POWERTOOLS_METRICS_NAMESPACE='MyNamespace',
+        SERVICE_ROLE_NAME='MyServiceRole',
+        SERVICE_ROLE_ARN='MyServiceRoleArn',
     )
     assert gov.POWERTOOLS_SERVICE_NAME == 'MyService'
     assert gov.LOG_LEVEL == 'INFO'
     assert gov.TABLE_NAME == 'MyTable'
     assert gov.PORTFOLIO_ID == 'MyPortfolioId'
     assert gov.POWERTOOLS_METRICS_NAMESPACE == 'MyNamespace'
+    assert gov.SERVICE_ROLE_NAME == 'MyServiceRole'
+    assert gov.SERVICE_ROLE_ARN == 'MyServiceRoleArn'
 
 
 def test_visibility_env_vars_invalid_table_name():

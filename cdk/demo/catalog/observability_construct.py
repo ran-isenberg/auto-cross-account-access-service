@@ -16,7 +16,7 @@ from cdk_monitoring_constructs import (
 )
 from constructs import Construct
 
-from cdk.catalog import constants
+from cdk.demo import constants
 
 
 class ObservabilityConstruct(Construct):

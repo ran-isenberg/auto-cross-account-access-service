@@ -2,10 +2,10 @@ from aws_cdk import CfnOutput, RemovalPolicy
 from aws_cdk import aws_dynamodb as dynamodb
 from constructs import Construct
 
-import cdk.catalog.constants as constants
+import cdk.demo.constants as constants
 
 
-class VisibilityDbConstruct(Construct):
+class GovernanceDbConstruct(Construct):
     def __init__(self, scope: Construct, id_: str) -> None:
         super().__init__(scope, id_)
 

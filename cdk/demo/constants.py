@@ -1,4 +1,3 @@
-SERVICE_ROLE_ARN = 'ServiceRoleArn'
 LAMBDA_BASIC_EXECUTION_ROLE = 'AWSLambdaBasicExecutionRole'
 SERVICE_ROLE = 'ServiceRole'
 VISIBILITY_LAMBDA = 'VisibilityLambda'

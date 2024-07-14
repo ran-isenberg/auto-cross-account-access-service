@@ -10,6 +10,8 @@
 ![github-star-badge](https://img.shields.io/github/stars/ran-isenberg/auto-cross-account-access-service.svg?style=social)
 ![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/ran-isenberg/auto-cross-account-access-service/badge)
 ![issues](https://img.shields.io/github/issues/ran-isenberg/auto-cross-account-access-service)
+
+
 ![alt text](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/main/docs/media/banner.png?raw=true)
 
 **[📜Documentation](https://ran-isenberg.github.io/auto-cross-account-access-service/)** | **[Blogs website](https://www.ranthebuilder.cloud)**
