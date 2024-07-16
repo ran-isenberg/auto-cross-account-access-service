@@ -1,6 +1,8 @@
+import json
 from typing import Optional
 
 from aws_cdk import CfnOutput, CfnParameter, CustomResource, RemovalPolicy, Stack, Token, aws_sns
+from aws_cdk import aws_ssm as ssm
 from constructs import Construct
 
 from cdk.demo.constants import CUSTOM_RESOURCE_TYPE
@@ -68,23 +70,22 @@ class GovernanceProductConstruct(Construct):
     ) -> None:
         assume_role_arn = Token.as_string(custom_resource.get_att_string('assume_role_arn'))
         external_id = Token.as_string(custom_resource.get_att_string('external_id'))
-        CfnOutput(self, id='AssumeRoleArn', value=assume_role_arn, description='The role you need to assume').override_logical_id('AssumeRoleArn')
-        CfnOutput(self, id='LambdaRoleArn', value=trust_role_arn, description='The Lambda role to use').override_logical_id('LambdaRoleArn')
-        CfnOutput(self, id='ExternalId', value=external_id, description='The external Id you use when you assume the role').override_logical_id(
-            'ExternalId'
-        )
-        """ computed_name = PARAMETER_NAME_TEMPLATE.format(
-            consumer_name=self._consumer_name,
-            env_name=self._deploy_env_name,
-            product_name=self._product_name,
-            key=key,
-        )
-        StringParameter(
+        CfnOutput(
+            self, id='OrdersRoleArn', value=assume_role_arn, description='The role you need to assume to gain access to orders service'
+        ).override_logical_id('OrdersRoleArn')
+        CfnOutput(self, id='MediatorRoleArn', value=trust_role_arn, description='The mediator role to assume').override_logical_id('MediatorRoleArn')
+        CfnOutput(
+            self, id='OrdersExternalId', value=external_id, description='The external Id you use when you assume the orders role'
+        ).override_logical_id('OrdersExternalId')
+
+        ssm_value = {'ordersAssumeRoleArn': assume_role_arn, 'ordersExternalId': external_id, 'mediatorRoleArn': trust_role_arn}
+
+        ssm.StringParameter(
             self,
-            f'ProductParam-{key.replace("/", "").replace("-", "")}',
-            description=f'An output parameter of a portfolio product. Product={self._product_name}',
-            parameter_name=computed_name,
-            string_value=value,
+            'ordersAssumeRoleArn',
+            description='contains role arn, external id to assume to access orders API and the mediator role ARN to assume',
+            parameter_name=f'/orders/{consumer_name}/{product_version}',
+            string_value=json.dumps(ssm_value),
             simple_name=False,
-            tier=ParameterTier.STANDARD,
-        ) """
+            tier=ssm.ParameterTier.STANDARD,
+        )

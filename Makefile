@@ -46,6 +46,7 @@ unit:
 
 build: deps
 	mkdir -p .build/lambdas ; cp -r catalog_backend .build/lambdas
+	mkdir -p .build/demo ; cp -r demo .build/demo
 	mkdir -p .build/common_layer ; poetry export --without=dev --format=requirements.txt > .build/common_layer/requirements.txt
 
 infra-tests: build

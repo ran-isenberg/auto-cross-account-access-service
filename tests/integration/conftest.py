@@ -27,24 +27,36 @@ def init():
     os.environ['SERVICE_ROLE_NAME'] = get_stack_output('ServiceRoleName')
     os.environ['TEST_ROLE_ARN'] = get_stack_output('TestRoleArn')
     os.environ['TEST_ROLE_NAME'] = get_stack_output('TestRoleName')
+    os.environ['API_URL'] = get_stack_output('TrustApiUrl')
+    os.environ['DEMO_LAMBDA'] = get_stack_output('DemoLambda')
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='module', autouse=False)
+def demo_lambda_name():
+    return os.environ['DEMO_LAMBDA']
+
+
+@pytest.fixture(scope='module', autouse=False)
+def api_url():
+    return os.environ['API_URL']
+
+
+@pytest.fixture(scope='module', autouse=False)
 def table_name():
     return os.environ['TABLE_NAME']
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='module', autouse=False)
 def portfolio_id():
     return os.environ['PORTFOLIO_ID']
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='module', autouse=False)
 def test_role_arn():
     return os.environ['TEST_ROLE_ARN']
 
 
-@pytest.fixture(scope='module', autouse=True)
+@pytest.fixture(scope='module', autouse=False)
 def service_role_arn():
     return os.environ['SERVICE_ROLE_ARN']
 
