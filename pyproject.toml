@@ -25,6 +25,7 @@ cachetools = "*"
 boto3 = "^1.26.125"
 aws-lambda-env-modeler = "*"
 crhelper = "*"
+aws-requests-auth = "*"
 
 [tool.poetry.dev-dependencies]
 # CDK

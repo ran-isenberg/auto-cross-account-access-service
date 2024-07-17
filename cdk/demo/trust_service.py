@@ -18,7 +18,7 @@ class TrustServiceConstruct(Construct):
         self.common_layer = common_layer
         self.rest_api = self._build_api_gw()
         api_resource: aws_apigateway.Resource = self.rest_api.root.add_resource('api')
-        orders_resource = api_resource.add_resource('order')
+        orders_resource = api_resource.add_resource('orders')
         self.create_order_func = self._add_post_lambda_integration(orders_resource, self.lambda_role)
         self.cross_account_access_role = self._build_cross_account_role()
         self.tests_role = self._build_tests_role()  # this is for the tests, in proper service, create it only in non prod environments
@@ -42,6 +42,7 @@ class TrustServiceConstruct(Construct):
                 )
             },
         )
+        CfnOutput(self, id='AssumeRoleArn', value=role.role_arn).override_logical_id('AssumeRoleArn')
         return role
 
     def _build_tests_role(self) -> iam.Role:
@@ -90,13 +91,13 @@ class TrustServiceConstruct(Construct):
             'OrdersCreateFunction',
             runtime=_lambda.Runtime.PYTHON_3_12,
             code=_lambda.InlineCode("""
-                def handler(event, context):
-                    print(event)
-                    return {
-                        'statusCode': 200,
-                        'body': 'Event logged'
-                    }
-                """),
+def handler(event, context):
+    print(event)
+    return {
+        'statusCode': 200,
+        'body': 'Event logged'
+    }
+"""),
             handler='index.handler',
             environment={
                 constants.POWERTOOLS_SERVICE_NAME: constants.SERVICE_NAME,  # for logger, tracer and metrics

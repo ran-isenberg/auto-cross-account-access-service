@@ -9,6 +9,7 @@ from cdk.demo.catalog.governance_construct import GovernanceConstruct
 from cdk.demo.catalog.observability_construct import ObservabilityConstruct
 from cdk.demo.catalog.portfolio_construct import PortfolioConstruct
 from cdk.demo.constants import OWNER_TAG, SERVICE_NAME, SERVICE_NAME_TAG
+from cdk.demo.demo_construct import DemoConstruct
 from cdk.demo.trust_service import TrustServiceConstruct
 from cdk.demo.utils import get_construct_name, get_username
 
@@ -42,6 +43,14 @@ class ServiceStack(Stack):
             functions=[self.governance.governance_lambda],
             visibility_queue=self.governance.queue,
             visibility_topic=self.governance.sns_topic,
+        )
+
+        self.demo_construct = DemoConstruct(
+            self,
+            get_construct_name(stack_prefix=id, construct_name='Demo'),
+            self.common_layer,
+            self.trust_service.rest_api.url,
+            self.trust_service.cross_account_access_role.role_arn,
         )
 
         # add security check
