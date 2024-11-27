@@ -21,7 +21,11 @@
 [![Website](https://img.shields.io/badge/Website-www.ranthebuilder.cloud-blue)](https://www.ranthebuilder.cloud/)
 
 This repository provides a sample implementation to showcase how to enforce governance policies through AWS Service Catalog, helping ensure compliance and efficient management of AWS resources while keeping a high level
-of visibility on deployed service across your organization.
+of visibility on deployed service across your organization. In addition, it shows how to enable automatic cross account access automation of IAM policies using service catalog. 
+
+In this case, we want to gain access to an API GW path protected with IAM authorizer. We will allow a role on our account to assume a role in the other account in an automatic manner.
+
+I discuss this solution in detail in the AWS Developers podcast: https://open.spotify.com/episode/0ZaVmlUWTZ2nbRCPCY6Ani
 
 AWS Service Catalog allows organizations to create and manage catalogs of IT services that are approved for use on AWS.
 
@@ -33,9 +37,15 @@ It demonstrates how to create and manage service catalog portfolios and products
 
 Another important feature is tracking provisioned products - a global DynamoDB table stores detailed information about provisioned products automatically, their versions, regions, and users, enhancing platform engineering visibility.
 
-Two samples products are included:
+Three samples products are included:
 1. WAF rules
 2. IAM role for CI/CD pipelines
+3. IAM trust product
+
+Sample service is also deployed:
+1. API GW
+2. Lambda with IAM authorizer
+3. Role to assume that provides permissions to call the Lambda from a different AWS account
 
 
 ## Prerequisites
@@ -116,7 +126,7 @@ This section describes the step-by-step deployment flow for the architecture dep
 ### 7. Handle Message with AWS Lambda
 **Step 7**: An AWS Lambda function is triggered to handle the message from the SQS queue.
 - **Action**: Lambda function processes the message.
-- **Outcome**: The message is processed, and necessary actions are taken.
+- **Outcome**: The message is processed, and necessary actions are taken such as setting up the IAM trust relationship to allow assume role.
 
 ### 8. Add Provisioned Product Information to DynamoDB
 **Step 8**: The Lambda function adds information about the provisioned product, including its version, region, and user details, to a global DynamoDB table for enhanced visibility.
