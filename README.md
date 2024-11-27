@@ -14,7 +14,7 @@
 
 ![alt text](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/main/docs/media/banner.png?raw=true)
 
-**[📜Documentation](https://ran-isenberg.github.io/auto-cross-account-access-service/)** | **[Blogs website](https://www.ranthebuilder.cloud)**
+**[Blogs website](https://www.ranthebuilder.cloud)**
 > **Contact details | ran.isenberg@ranthebuilder.cloud**
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/IsenbergRan?label=Follow&style=social)](https://twitter.com/IsenbergRan)
