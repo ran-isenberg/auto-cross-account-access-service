@@ -93,6 +93,8 @@ The solution architecture includes:
 This section describes the step-by-step deployment flow for the architecture depicted in the diagram.
 
 Watch this section that explains the flow:
+
+
 [![Video Title](https://img.youtube.com/vi/XvFYh8DOdXk/0.jpg)](https://youtu.be/XvFYh8DOdXk?t=1128)
 
 
