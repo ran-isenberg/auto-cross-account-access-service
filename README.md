@@ -48,6 +48,7 @@ Sample service is also deployed:
 3. Role to assume that provides permissions to call the Lambda from a different AWS account
 
 
+
 ## Prerequisites
 - AWS account with necessary permissions.
 - AWS CLI installed and configured.
@@ -85,10 +86,14 @@ The solution architecture includes:
 - SNS topic and SQS queue
 - AWS Lambda for handling custom resource requests
 - AWS CloudWatch logs, metrics, traces (AWS X-Ray), alarms and dashboards for observability.
+- API GW, Lambda, Role as the sample service we want to automate access to
 
 ## Step-by-Step Provisioned Product Deployment Flow
 
 This section describes the step-by-step deployment flow for the architecture depicted in the diagram.
+
+Watch this section that explains the flow:
+[![Video Title](https://img.youtube.com/vi/XvFYh8DOdXk/0.jpg)](https://youtu.be/XvFYh8DOdXk?t=1128)
 
 
 ![alt text](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/main/docs/media/design.png?raw=true)
