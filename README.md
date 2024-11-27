@@ -98,7 +98,7 @@ Watch this section that explains the flow:
 [![Video Title](https://img.youtube.com/vi/XvFYh8DOdXk/0.jpg)](https://youtu.be/XvFYh8DOdXk?t=1128)
 
 
-![alt text](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/main/docs/media/design.png?raw=true)
+![alt text](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/main/docs/media/design2.png?raw=true)
 
 ### 1. Provision Product by Admin
 **Step 1**: The Admin initiates the provisioning of a product through the AWS Service Catalog service and the platform engineering portfolio.
