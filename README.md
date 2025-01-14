@@ -4,7 +4,7 @@
 ## Serverless Platform Engineering Example
 
 [![license](https://img.shields.io/github/license/ran-isenberg/auto-cross-account-access-service)](https://github.com/ran-isenberg/auto-cross-account-access-service/blob/master/LICENSE)
-![PythonSupport](https://img.shields.io/static/v1?label=python&message=3.12&color=blue?style=flat-square&logo=python)
+![PythonSupport](https://img.shields.io/static/v1?label=python&message=3.13&color=blue?style=flat-square&logo=python)
 [![codecov](https://codecov.io/gh/ran-isenberg/auto-cross-account-access-service/branch/main/graph/badge.svg?token=P2K7K4KICF)](https://codecov.io/gh/ran-isenberg/auto-cross-account-access-service)
 ![version](https://img.shields.io/github/v/release/ran-isenberg/auto-cross-account-access-service)
 ![github-star-badge](https://img.shields.io/github/stars/ran-isenberg/auto-cross-account-access-service.svg?style=social)
@@ -21,7 +21,7 @@
 [![Website](https://img.shields.io/badge/Website-www.ranthebuilder.cloud-blue)](https://www.ranthebuilder.cloud/)
 
 This repository provides a sample implementation to showcase how to enforce governance policies through AWS Service Catalog, helping ensure compliance and efficient management of AWS resources while keeping a high level
-of visibility on deployed service across your organization. In addition, it shows how to enable automatic cross account access automation of IAM policies using service catalog. 
+of visibility on deployed service across your organization. In addition, it shows how to enable automatic cross account access automation of IAM policies using service catalog.
 
 In this case, we want to gain access to an API GW path protected with IAM authorizer. We will allow a role on our account to assume a role in the other account in an automatic manner.
 
@@ -55,8 +55,8 @@ Sample service is also deployed:
 - Node.js and npm installed.
 - AWS CDK (Cloud Development Kit) installed.
 - AWS account after running the CDK bootstrap command in the designated region
-- Python 3.12 installed
-- Poetry
+- Python 3.13 installed
+- Poetry v2.0.1
 - Docker
 
 ## Setup

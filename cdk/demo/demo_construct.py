@@ -49,7 +49,7 @@ class DemoConstruct(Construct):
         function = _lambda.Function(
             self,
             'DemoFunction',
-            runtime=_lambda.Runtime.PYTHON_3_12,
+            runtime=_lambda.Runtime.PYTHON_3_13,
             code=_lambda.Code.from_asset(constants.DEMO_FOLDER),
             handler='demo.handlers.handler.lambda_handler',
             environment={

@@ -15,4 +15,4 @@ def test_invoke_demo_lambda(demo_lambda_name: str):
     assert response['StatusCode'] == 200, f'Expected status code 200, but got {response["StatusCode"]}'
     payload = json.loads(response['Payload'].read().decode('utf-8'))
     print('Lambda response payload:', payload)
-    assert payload['statusCode'] == 200, f"Expected status code in payload to be 200, but got {payload['statusCode']}"
+    assert payload['statusCode'] == 200, f'Expected status code in payload to be 200, but got {payload["statusCode"]}'
