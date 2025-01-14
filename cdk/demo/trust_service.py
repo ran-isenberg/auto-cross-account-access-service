@@ -89,7 +89,7 @@ class TrustServiceConstruct(Construct):
         lambda_function = _lambda.Function(
             self,
             'OrdersCreateFunction',
-            runtime=_lambda.Runtime.PYTHON_3_12,
+            runtime=_lambda.Runtime.PYTHON_3_13,
             code=_lambda.InlineCode("""
 def handler(event, context):
     print(event)

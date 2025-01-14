@@ -110,7 +110,7 @@ class GovernanceConstruct(Construct):
         lambda_function = _lambda.Function(
             self,
             constants.VISIBILITY_LAMBDA,
-            runtime=_lambda.Runtime.PYTHON_3_12,
+            runtime=_lambda.Runtime.PYTHON_3_13,
             code=_lambda.Code.from_asset(constants.BUILD_FOLDER),
             handler='catalog_backend.handlers.product_callback_handler.handle_product_event',
             environment={
